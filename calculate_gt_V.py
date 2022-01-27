@@ -28,11 +28,12 @@ def label_to_num(label):
     return dictionary2[temp]
 
 dictionary = {62 : 1, 64 : 2, 72 : 3, 28 : 4, 51 : 5}
+list = [62, 64, 72, 28, 51]
 
 dict = json.load(open(f"vectorized_data_labelled_{NN}_1.json.json"))
 #parse for ground_truth
 for batch in range(2, 7):
-    f = open(f"vectorized_data_labelled_retinanet_{batch}.json.json")
+    f = open(f"vectorized_data_labelled_{NN}_{batch}.json.json")
     dict_to_add = json.load(f)
     dict.extend(dict_to_add)
 
@@ -56,7 +57,6 @@ for v in range(num_videos):
         gt_poses.append(np.array(dict[v]["labels"][i]["position"]))
 
     for f in range(num_frames):
-        f = 35
         #print(f"f {f}")
         c_x = dict[v]["views"][f]["camera"]["x"]
         c_y = dict[v]["views"][f]["camera"]["y"]
@@ -69,6 +69,8 @@ for v in range(num_videos):
         camera_focus = np.array([f_x, f_y, f_z])
 
         det_labels = dict[v]["views"][f]["detections"]["labels"]
+        det_labels = [label for label in det_labels if label in list]
+        #may need to add something for taking top n detections or thresholding
         for d in range(len(det_labels)):
             det_label = dictionary[det_labels[d]]
             center = dict[v]["views"][f]["detections"]["center"][d]
